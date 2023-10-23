@@ -1,0 +1,57 @@
+{
+  "name": "engine",
+  "version": "1.0.0",
+  "description": "This is the backend application for BizzTM",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon --exec babel-node src/app.js",
+    "build": "babel src -d build",
+    "start": "npm run build && node build/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://bitbucket.org/bizztm/wayneestaterepo.git"
+  },
+  "keywords": [
+    "BizzTM",
+    "engine",
+    "backend",
+    "app",
+    "server",
+    "robin"
+  ],
+  "author": "Arpit Rai",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://bitbucket.org/bizztm/wayneestaterepo/issues"
+  },
+  "homepage": "https://bitbucket.org/bizztm/wayneestaterepo#readme",
+  "devDependencies": {
+    "@babel/core": "^7.17.2",
+    "@babel/node": "^7.16.8",
+    "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "@babel/cli": "^7.17.0",
+    "@babel/preset-env": "^7.16.11",
+    "@graphql-tools/schema": "^9.0.4",
+    "apollo-datasource-mongodb": "^0.5.2",
+    "apollo-datasource-rest": "^3.5.1",
+    "apollo-server": "^3.6.3",
+    "apollo-server-express": "^3.6.3",
+    "core-js": "^3.21.1",
+    "dotenv": "^16.0.1",
+    "express": "^4.17.2",
+    "firebase-admin": "^11.0.0",
+    "graphql": "^16.3.0",
+    "graphql-constraint-directive": "^4.1.1",
+    "lodash": "^4.17.21",
+    "mongoose": "^6.2.1",
+    "mongoose-atlas-search": "^1.0.8",
+    "mongoose-autopopulate": "^0.16.0",
+    "node-fetch": "^2.6.7",
+    "npm": "^8.5.1",
+    "regenerator-runtime": "^0.13.9"
+  }
+}
