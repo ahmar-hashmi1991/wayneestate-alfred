@@ -1,0 +1,22 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/bitnami/alfred_server/wayneestate
+hooks:
+  BeforeInstall:
+    - location: server/scripts/before_install.sh
+      timeout: 300
+      runas: bitnami
+  AfterInstall:
+    - location: server/scripts/after_install.sh
+      timeout: 300
+      runas: bitnami
+  ApplicationStart:
+    - location: server/scripts/application_start.sh
+      timeout: 300
+      runas: bitnami
+  ApplicationStop:
+    - location: server/scripts/application_stop.sh
+      timeout: 300
+      runas: bitnami

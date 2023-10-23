@@ -1,0 +1,98 @@
+#  Template NodeJS build
+
+#  This template allows you to validate your NodeJS code.
+#  The workflow allows running tests and code linting on the default branch.
+
+image: atlassian/default-image:2
+
+pipelines:
+  custom:
+    production:
+      - step:
+          name: Create artifact
+          script:
+            - zip -r production.zip *
+          artifacts:
+          - production.zip
+      - step:
+          name: Upload to S3
+          services:
+            - docker
+          script:
+            - pipe: atlassian/aws-code-deploy:0.3.2
+              variables:
+                AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+                AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+                AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+                S3_BUCKET: $S3_BUCKET
+                COMMAND: "upload"
+                APPLICATION_NAME: $APPLICATION_NAME
+                ZIP_FILE: 'production.zip'
+      - step:
+          name: Deploy with CodeDeploy
+          services:
+            - docker
+          script:
+            - echo "Environment ${REPOSITORY_VARIABLE}"
+            - pipe: atlassian/aws-code-deploy:0.3.2
+              variables:
+                AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+                AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+                AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+                S3_BUCKET: $S3_BUCKET
+                COMMAND: 'deploy'
+                APPLICATION_NAME: $APPLICATION_NAME
+                DEPLOYMENT_GROUP: $DEPLOYMENT_GROUP
+                IGNORE_APPLICATION_STOP_FAILURES: 'true'
+                FILE_EXISTS_BEHAVIOR: 'OVERWRITE'
+                WAIT: 'true'
+  default:
+      - step:
+          name: Build
+          caches:
+            - node
+          script:
+            - cd server
+            - npm install
+            - npm run build
+  branches: 
+    develop:
+          - step:
+              name: Create artifact
+              script:
+                - zip -r robin_dev.zip *
+              artifacts:
+              - robin_dev.zip
+          - step:
+              name: Upload to S3
+              services:
+                - docker
+              script:
+                - pipe: atlassian/aws-code-deploy:0.3.2
+                  variables:
+                    AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+                    AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+                    AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+                    S3_BUCKET: $DEV_S3_BUCKET
+                    COMMAND: "upload"
+                    APPLICATION_NAME: $DEV_APPLICATION_NAME
+                    ZIP_FILE: 'robin_dev.zip'
+          - step:
+              name: Deploy with CodeDeploy
+              deployment: staging
+              services:
+                - docker
+              script:
+                - echo "Environment ${REPOSITORY_VARIABLE}"
+                - pipe: atlassian/aws-code-deploy:0.3.2
+                  variables:
+                    AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+                    AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+                    AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+                    S3_BUCKET: $DEV_S3_BUCKET
+                    COMMAND: 'deploy'
+                    APPLICATION_NAME: $DEV_APPLICATION_NAME
+                    DEPLOYMENT_GROUP: $DEV_DEPLOYMENT_GROUP
+                    IGNORE_APPLICATION_STOP_FAILURES: 'true'
+                    FILE_EXISTS_BEHAVIOR: 'OVERWRITE'
+                    WAIT: 'true'
